@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.*;
 
 /**
  * SnakeGUI.java
@@ -78,17 +79,18 @@ public class SnakeGUI extends JFrame implements KeyListener{
     /** This tells whether or not the game has been paused */
     private static boolean paused;
 
-    /** This represents the number of frames that have been displayed since the last user input */
-    private static double framesSinceLastInput;
+    /** This array list caches the moves the snake needs to make */
+    private static ArrayList<Snake.Direction> moveCache;
 
     /**
      * This is the constructor which initializes and displays the GUI
     */
     public SnakeGUI(){
         //sets the snake and food to a new instance
-        this.snake = new Snake();
-        this.food = new Food();
-
+        snake = new Snake();
+        food = new Food();
+        
+        moveCache = new ArrayList<Snake.Direction>();
         //initializes the scoreboard
         scoreBoard = new JLabel("", SwingConstants.CENTER);
         scoreBoard.setFont(SCOREBOARD_FONT);
@@ -140,30 +142,24 @@ public class SnakeGUI extends JFrame implements KeyListener{
      */
     @Override
     public void keyPressed(KeyEvent e) {
-        if(framesSinceLastInput >= INPUT_DELAY){
-            for(int i = 0; i < UP_KEYS.length; i++){
-                if(UP_KEYS[i] == e.getKeyCode()){
-                    snake.setDirection(Snake.Direction.UP);
-                    framesSinceLastInput = 0;
-                }
+        for(int i = 0; i < UP_KEYS.length; i++){
+            if(UP_KEYS[i] == e.getKeyCode()){
+                moveCache.add(Snake.Direction.UP);
             }
-            for(int i = 0; i < DOWN_KEYS.length; i++){
-                if(DOWN_KEYS[i] == e.getKeyCode()){
-                    snake.setDirection(Snake.Direction.DOWN);
-                    framesSinceLastInput = 0;
-                }
+        }
+        for(int i = 0; i < DOWN_KEYS.length; i++){
+            if(DOWN_KEYS[i] == e.getKeyCode()){
+                moveCache.add(Snake.Direction.DOWN);
             }
-            for(int i = 0; i < LEFT_KEYS.length; i++){
-                if(LEFT_KEYS[i] == e.getKeyCode()){
-                    snake.setDirection(Snake.Direction.LEFT);
-                    framesSinceLastInput = 0;
-                }
+        }
+        for(int i = 0; i < LEFT_KEYS.length; i++){
+            if(LEFT_KEYS[i] == e.getKeyCode()){
+                moveCache.add(Snake.Direction.LEFT);
             }
-            for(int i = 0; i < RIGHT_KEYS.length; i++){
-                if(RIGHT_KEYS[i] == e.getKeyCode()){
-                    snake.setDirection(Snake.Direction.RIGHT);
-                    framesSinceLastInput = 0;
-                }
+        }
+        for(int i = 0; i < RIGHT_KEYS.length; i++){
+            if(RIGHT_KEYS[i] == e.getKeyCode()){
+                moveCache.add(Snake.Direction.RIGHT);
             }
         }
         for(int i = 0; i < PAUSE_KEYS.length; i++){
@@ -182,7 +178,6 @@ public class SnakeGUI extends JFrame implements KeyListener{
     public void keyReleased(KeyEvent e) {
 
     }
-
     /**
      * This is the main method, which creates the SnakeGUI object the game is
      * played through, and houses the game loop.
@@ -203,9 +198,11 @@ public class SnakeGUI extends JFrame implements KeyListener{
                 squares[food.getY()][food.getX()].setBackground(FOOD_COLOR);
 
                 scoreBoard.setText("Score: " + score + "  High Score: " + highScore);
-
+                if(!moveCache.isEmpty()){
+                    snake.setDirection(moveCache.get(0));
+                    moveCache.remove(0);
+                }
                 snake.move();
-                
                 if(snake.isOverFood(food.getX(), food.getY())){
                     snake.eat();
                     food.moveFood(snake);
@@ -220,7 +217,6 @@ public class SnakeGUI extends JFrame implements KeyListener{
                 } catch(InterruptedException e){
                     System.err.println("Thread interrupted!");
                 }
-                framesSinceLastInput++;
             }
 
             if(!snake.isAlive()){
@@ -235,6 +231,7 @@ public class SnakeGUI extends JFrame implements KeyListener{
                     snake = new Snake();
                     food = new Food();
                     score = snake.getNumFoodEaten();
+                    moveCache = new ArrayList<Snake.Direction>();
                 } else {
                     gui.dispose();
                     break;
