@@ -144,22 +144,38 @@ public class SnakeGUI extends JFrame implements KeyListener{
     public void keyPressed(KeyEvent e) {
         for(int i = 0; i < UP_KEYS.length; i++){
             if(UP_KEYS[i] == e.getKeyCode()){
-                moveCache.add(Snake.Direction.UP);
+                if(moveCache.isEmpty()){
+                    moveCache.add(Snake.Direction.UP);
+                } else if(moveCache.get(0) != Snake.Direction.UP){
+                    moveCache.add(Snake.Direction.UP);
+                }
             }
         }
         for(int i = 0; i < DOWN_KEYS.length; i++){
             if(DOWN_KEYS[i] == e.getKeyCode()){
-                moveCache.add(Snake.Direction.DOWN);
+                if(moveCache.isEmpty()){
+                    moveCache.add(Snake.Direction.DOWN);
+                } else if(moveCache.get(0) != Snake.Direction.DOWN){
+                    moveCache.add(Snake.Direction.DOWN);
+                }
             }
         }
         for(int i = 0; i < LEFT_KEYS.length; i++){
             if(LEFT_KEYS[i] == e.getKeyCode()){
-                moveCache.add(Snake.Direction.LEFT);
+                if(moveCache.isEmpty()){
+                    moveCache.add(Snake.Direction.LEFT);
+                } else if(moveCache.get(0) != Snake.Direction.LEFT){
+                    moveCache.add(Snake.Direction.LEFT);
+                }
             }
         }
         for(int i = 0; i < RIGHT_KEYS.length; i++){
             if(RIGHT_KEYS[i] == e.getKeyCode()){
-                moveCache.add(Snake.Direction.RIGHT);
+                if(moveCache.isEmpty()){
+                    moveCache.add(Snake.Direction.RIGHT);
+                } else if(moveCache.get(0) != Snake.Direction.RIGHT){
+                    moveCache.add(Snake.Direction.RIGHT);
+                }
             }
         }
         for(int i = 0; i < PAUSE_KEYS.length; i++){
